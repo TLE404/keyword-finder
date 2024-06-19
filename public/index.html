@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Resume Keyword Counter</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Upload Resume and Keywords</h1>
+      <form id="upload-form" method="post" enctype="multipart/form-data">
+        <label for="resume">Resume:</label>
+        <input type="file" id="resume" name="resume" accept=".txt,.pdf,.doc,.docx" required>
+        <label for="keywords">Keywords (comma-separated):</label>
+        <input type="text" id="keywords" name="keywords" required>
+        <button type="submit">Submit</button>
+      </form>
+      <div id="results"></div>
+    </div>
+    <script>
+      document.getElementById('upload-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = `
+          <div class="total-count">Total count: ${result.totalCount}</div>
+          <ul class="keyword-counts">
+            ${Object.entries(result.keywordCounts).map(([keyword, count]) => `
+              <li><span>${keyword}</span><span>${count}</span></li>
+            `).join('')}
+          </ul>
+        `;
+      });
+    </script>
+  </body>
+</html>
